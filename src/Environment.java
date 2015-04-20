@@ -1,9 +1,7 @@
 import java.awt.BorderLayout;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputAdapter;
@@ -33,20 +31,19 @@ public class Environment extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
 
-		displayPanel.repaint();
 	}
 	
 	private class MouseControl extends MouseInputAdapter{
 		public void mousePressed(MouseEvent e) {
-			System.out.println("pressed "+e.getX());
+			displayPanel.onMousePressed( e.getX(), e.getY() );
 	    }
 
 	    public void mouseDragged(MouseEvent e) {
-	    	System.out.println("dragged "+e.getX());
+	    	displayPanel.onMouseDragged( e.getX(), e.getY() );
 	    }
 
 	    public void mouseReleased(MouseEvent e) {
-	    	System.out.println("released "+e.getX());
+	    	displayPanel.onMouseReleased( e.getX(), e.getY() );
 	    }
 	}
 }
