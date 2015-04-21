@@ -66,6 +66,7 @@ public class Path
 		// add the root node to the queue for processing
 		Queue<PathNode> queue = new LinkedList<PathNode>();
 		queue.add( root );
+		
 		while(!queue.isEmpty()){
 			if(queue.peek().containsPoint( endPoint )){
 				System.out.println("endpoint found");
