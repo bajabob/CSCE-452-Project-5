@@ -21,6 +21,26 @@ public class BlockManager
 
 	}
 	
+	/**
+	 * Are there any blocks occupying this point?
+	 * @param x int
+	 * @param y int
+	 * @return boolean
+	 */
+	public boolean containsPoint(int x, int y){
+		for(Block b : blocks){
+			if(b.containsPoint( x, y )){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Called when the mouse is pressed initially
+	 * @param x int
+	 * @param y int
+	 */
 	public void onMousePressed(int x, int y){
 		for(Block b : blocks){
 			if(b.containsPoint( x, y )){
@@ -31,18 +51,32 @@ public class BlockManager
 		}
 	}
 	
+	/**
+	 * Called when the mouse is dragged
+	 * @param x int
+	 * @param y int
+	 */
 	public void onMouseDragged(int x, int y){
 		if(currentSelectedBlock != null){
 			currentSelectedBlock.translate( x, y );
 		}
 	}
 	
+	/**
+	 * Called when the mouse is released
+	 * @param x int
+	 * @param y int
+	 */
 	public void onMouseReleased(int x, int y){
 		if(currentSelectedBlock != null){
 			currentSelectedBlock.onMouseReleased();
 		}
 	}
 	
+	/**
+	 * Called when this object requires drawing
+	 * @param g Graphics
+	 */
 	public void onDraw(Graphics g){
 		for(int i = 0; i < blocks.size(); i++){
 			blocks.get( i ).onDraw( g );

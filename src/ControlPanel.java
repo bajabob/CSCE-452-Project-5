@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 
-public class ControlPanel extends JPanel{
+public class ControlPanel extends JPanel implements ActionListener{
 
 	public static final String TOGGLE_DROP_START_POINT = "toggleDropStartPoint";
 	public static final String TOGGLE_DROP_END_POINT = "toggleDropEndPoint";
@@ -30,6 +29,12 @@ public class ControlPanel extends JPanel{
 	 */
 	JRadioButton toggleDropStartPoint, toggleDropEndPoint, toggleMoveBoxes;
 		
+	/**
+	 * Current selected toggle
+	 */
+	private String currentToggle = TOGGLE_DROP_START_POINT;
+	
+	
 	public ControlPanel(ActionListener ae) {
 		super();
 		
@@ -53,10 +58,12 @@ public class ControlPanel extends JPanel{
 		buttonSimulate = new JButton("Simulate");
 		buttonSimulate.setActionCommand(ACTION_SIMULATE);
 		
-		// create action listeners
-		toggleDropStartPoint.addActionListener(ae);
-		toggleDropEndPoint.addActionListener(ae);
-		toggleMoveBoxes.addActionListener(ae);
+		// add action listeners
+		// toggles callback locally
+		toggleDropStartPoint.addActionListener(this);
+		toggleDropEndPoint.addActionListener(this);
+		toggleMoveBoxes.addActionListener(this);
+		// simulate calls-back to Environment
 		buttonSimulate.addActionListener(ae);
 		
 		// add components to this panel
@@ -67,6 +74,20 @@ public class ControlPanel extends JPanel{
 		this.add(toggleMoveBoxes);
 		this.add(buttonSimulate);
 		this.add(Box.createHorizontalGlue());
+	}
+
+	/**
+	 * Get the current selected toggle
+	 * @return String
+	 */
+	public String getCurrentToggle(){
+		return this.currentToggle;
+	}
+	
+	@Override
+	public void actionPerformed( ActionEvent e )
+	{
+		currentToggle = e.getActionCommand();
 	}
 
 }

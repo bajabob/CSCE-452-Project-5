@@ -1,7 +1,6 @@
 import java.awt.Graphics;
 import java.awt.Point;
 
-
 public class Block
 {
 
@@ -14,7 +13,6 @@ public class Block
 	 * the dimensions of this block
 	 */
 	private int width, height;
-	
 
 	/**
 	 * used when translating this block (reference point)
@@ -29,11 +27,19 @@ public class Block
 		this.translate = new Point(-1, -1);
 	}
 	
+	/**
+	 * Called when the mouse is pressed
+	 * @param x int
+	 * @param y int
+	 */
 	public void onMousePressed(int x, int y){
 		translate.x = x - currentX;
 		translate.y = y - currentY;
 	}
 	
+	/**
+	 * Called when the mouse button is released
+	 */
 	public void onMouseReleased(){
 		translate.x = -1;
 		translate.y = -1;
@@ -46,8 +52,16 @@ public class Block
 	 * @param y int
 	 */
 	public void translate(int x, int y){
-		currentX = (x - translate.x);
-		currentY = (y - translate.y);
+		int newX = (x - translate.x);
+		int newY = (y - translate.y);
+		
+		// make sure block stays in bounds
+		if(Config.containsPoint( newX, newY )){
+			if(Config.containsPoint( newX+width, newY+height )){
+				currentX = newX;
+				currentY = newY;
+			}
+		}
 	}
 	
 	/**
@@ -69,7 +83,10 @@ public class Block
 		return false;
 	}
 	
-	
+	/**
+	 * Called when this object needs drawn
+	 * @param g Graphics
+	 */
 	public void onDraw(Graphics g){
 		g.setColor( Config.BLOCK_COLOR );
 		g.fillRect( currentX, currentY, width, height );

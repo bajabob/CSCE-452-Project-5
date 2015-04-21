@@ -11,6 +11,8 @@ public class Environment extends JPanel implements ActionListener{
 
 	private DisplayPanel displayPanel;
 	
+	private ControlPanel controlPanel;
+	
 	public Environment(){
 		// set the laout for thie topmost view
 		this.setLayout(new BorderLayout());
@@ -21,29 +23,31 @@ public class Environment extends JPanel implements ActionListener{
 		displayPanel.addMouseListener(mControl);
 		displayPanel.addMouseMotionListener(mControl);
 		
+		// create the control panel
+		controlPanel = new ControlPanel(this);
+		
 		// add control panel and display to this view
 		this.add(displayPanel, BorderLayout.CENTER);
-		this.add(new ControlPanel(this), BorderLayout.SOUTH);
+		this.add(controlPanel, BorderLayout.SOUTH);
 		
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand());
-
+		displayPanel.onSimulate();
 	}
 	
 	private class MouseControl extends MouseInputAdapter{
 		public void mousePressed(MouseEvent e) {
-			displayPanel.onMousePressed( e.getX(), e.getY() );
+			displayPanel.onMousePressed( e.getX(), e.getY(), controlPanel.getCurrentToggle() );
 	    }
 
 	    public void mouseDragged(MouseEvent e) {
-	    	displayPanel.onMouseDragged( e.getX(), e.getY() );
+	    	displayPanel.onMouseDragged( e.getX(), e.getY(), controlPanel.getCurrentToggle()  );
 	    }
 
 	    public void mouseReleased(MouseEvent e) {
-	    	displayPanel.onMouseReleased( e.getX(), e.getY() );
+	    	displayPanel.onMouseReleased( e.getX(), e.getY(), controlPanel.getCurrentToggle()  );
 	    }
 	}
 }
