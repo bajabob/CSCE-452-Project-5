@@ -8,6 +8,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
@@ -16,19 +17,24 @@ public class ControlPanel extends JPanel implements ActionListener{
 
 	public static final String TOGGLE_DROP_START_POINT = "toggleDropStartPoint";
 	public static final String TOGGLE_DROP_END_POINT = "toggleDropEndPoint";
-	public static final String TOGGLE_MOVE_BOXES = "toggleMoveBoxes";
+	public static final String TOGGLE_MOVE_OBSTACLES = "toggleMoveObstacles";
 	public static final String ACTION_SIMULATE = "actionSimulate";
 	
 	/**
 	 * runs the path finding simulation
 	 */
-	JButton buttonSimulate;
+	private JButton buttonSimulate;
 	
 	/**
 	 * radio buttons for toggling UI controls
 	 */
-	JRadioButton toggleDropStartPoint, toggleDropEndPoint, toggleMoveBoxes;
+	private JRadioButton toggleDropStartPoint, toggleDropEndPoint, toggleMoveObstacles;
 		
+	/**
+	 * Messages to display
+	 */
+	private JLabel message;
+	
 	/**
 	 * Current selected toggle
 	 */
@@ -47,22 +53,25 @@ public class ControlPanel extends JPanel implements ActionListener{
 		toggleDropStartPoint.setActionCommand(TOGGLE_DROP_START_POINT);
 		toggleDropEndPoint = new JRadioButton("Drop End Point");
 		toggleDropEndPoint.setActionCommand(TOGGLE_DROP_END_POINT);
-		toggleMoveBoxes = new JRadioButton("Move Boxes");
-		toggleMoveBoxes.setActionCommand(TOGGLE_MOVE_BOXES);
+		toggleMoveObstacles = new JRadioButton("Move Obstacles");
+		toggleMoveObstacles.setActionCommand(TOGGLE_MOVE_OBSTACLES);
 		
 		ButtonGroup toggles = new ButtonGroup();
 		toggles.add(toggleDropStartPoint);
 		toggles.add(toggleDropEndPoint);
-		toggles.add(toggleMoveBoxes);
+		toggles.add(toggleMoveObstacles);
 		
 		buttonSimulate = new JButton("Simulate");
 		buttonSimulate.setActionCommand(ACTION_SIMULATE);
+		
+		message = new JLabel("");
+		message.setForeground(Color.RED);
 		
 		// add action listeners
 		// toggles callback locally
 		toggleDropStartPoint.addActionListener(this);
 		toggleDropEndPoint.addActionListener(this);
-		toggleMoveBoxes.addActionListener(this);
+		toggleMoveObstacles.addActionListener(this);
 		// simulate calls-back to Environment
 		buttonSimulate.addActionListener(ae);
 		
@@ -71,11 +80,31 @@ public class ControlPanel extends JPanel implements ActionListener{
 		this.add(Box.createHorizontalGlue());
 		this.add(toggleDropStartPoint);
 		this.add(toggleDropEndPoint);
-		this.add(toggleMoveBoxes);
+		this.add(toggleMoveObstacles);
 		this.add(buttonSimulate);
+		this.add(message);
 		this.add(Box.createHorizontalGlue());
 	}
 
+	/**
+	 * Called when a simulation is completed
+	 * @param p PathResponse
+	 */
+	public void onSimulationComplete(PathResponse p){
+		if(p.hasError()){
+			message.setText(p.getMessage());
+		}else{
+			message.setText("");
+		}
+	}
+	
+	/**
+	 * Clear the message label
+	 */
+	public void clearMessage(){
+		message.setText("");
+	}
+	
 	/**
 	 * Get the current selected toggle
 	 * @return String

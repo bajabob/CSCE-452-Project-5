@@ -7,16 +7,17 @@ import java.util.List;
 import java.util.Queue;
 
 
-public class Path
+public class Path 
 {
 	private Point startPoint, endPoint;
 	
 	private List<Point> shortestPath;
 	
 	public Path(){
-		startPoint = new Point(40, 460);
-		endPoint = new Point(460, 460);
+		startPoint = new Point(40, Config.DISPLAY_HEIGHT-40);
+		endPoint = new Point(Config.DISPLAY_WIDTH-40, Config.DISPLAY_HEIGHT-40);
 		shortestPath = new ArrayList<Point>();
+		
 	}
 	
 	/**
@@ -40,10 +41,19 @@ public class Path
 	}
 	
 	/**
+	 * Clear the path. Typically called when something on the
+	 *  grid has changed.
+	 */
+	public void clear(){
+		shortestPath.clear();
+	}
+	
+	
+	/**
 	 * Construct a shortest path 
 	 * @param bm
 	 */
-	public boolean simulate(BlockManager bm){
+	public PathResponse simulate(ObstacleManager om){
 		
 		shortestPath.clear();
 		
@@ -54,7 +64,7 @@ public class Path
 		// false = node visited
 		for(int x = 0; x < Config.DISPLAY_WIDTH; x++){
 			for(int y = 0; y < Config.DISPLAY_HEIGHT; y++){
-				grid[x][y] = !bm.containsPoint( x, y );
+				grid[x][y] = !om.containsPoint( x, y );
 			}
 		}
 		
@@ -71,11 +81,11 @@ public class Path
 			if(queue.peek().containsPoint( endPoint )){
 				System.out.println("endpoint found");
 				addParent(queue.peek());
-				return true;
+				return new PathResponse();
 			}
 			addAdjacentNodes( queue, grid );
 		}
-		return false;
+		return new PathResponse(true, "Path Not Found");
 	}
 	
 	private void addParent(PathNode node){
@@ -86,31 +96,22 @@ public class Path
 		}
 	}
 	
+	/**
+	 * Add any adjacent nodes surrounding the node at the front of the node
+	 *  that have not yet been visited or are not a block
+	 * @param queue
+	 * @param grid
+	 */
 	private void addAdjacentNodes(Queue<PathNode> queue, boolean[][] grid){
 		PathNode p = queue.poll();
 		int x = p.getX();
 		int y = p.getY();
-		
-		// top left
-		if(p.hasLeft() && p.hasTop() && grid[x-1][y-1]){
-			grid[x-1][y-1] = false;
-			PathNode c = new PathNode(new Point(x-1, y-1), p);
-			p.addChild( c );
-			queue.add( c );
-		}
+	
 		
 		// top
 		if(p.hasTop() && grid[x][y-1]){
 			grid[x][y-1] = false;
 			PathNode c = new PathNode(new Point(x, y-1), p);
-			p.addChild( c );
-			queue.add( c );
-		}
-		
-		// top right
-		if(p.hasTop() && p.hasRight() && grid[x+1][y-1]){
-			grid[x+1][y-1] = false;
-			PathNode c = new PathNode(new Point(x+1, y-1), p);
 			p.addChild( c );
 			queue.add( c );
 		}
@@ -123,18 +124,18 @@ public class Path
 			queue.add( c );
 		}
 		
-		// bottom right
-		if(p.hasRight() && p.hasBottom() && grid[x+1][y+1]){
-			grid[x+1][y+1] = false;
-			PathNode c = new PathNode(new Point(x+1, y+1), p);
-			p.addChild( c );
-			queue.add( c );
-		}
-		
 		// bottom
 		if(p.hasBottom() && grid[x][y+1]){
 			grid[x][y+1] = false;
 			PathNode c = new PathNode(new Point(x, y+1), p);
+			p.addChild( c );
+			queue.add( c );
+		}
+		
+		// left
+		if(p.hasLeft() && grid[x-1][y]){
+			grid[x-1][y] = false;
+			PathNode c = new PathNode(new Point(x-1, y), p);
 			p.addChild( c );
 			queue.add( c );
 		}
@@ -147,10 +148,26 @@ public class Path
 			queue.add( c );
 		}
 		
-		// bottom left
-		if(p.hasLeft() && grid[x-1][y]){
-			grid[x-1][y] = false;
-			PathNode c = new PathNode(new Point(x-1, y), p);
+		// top left
+		if(p.hasLeft() && p.hasTop() && grid[x-1][y-1]){
+			grid[x-1][y-1] = false;
+			PathNode c = new PathNode(new Point(x-1, y-1), p);
+			p.addChild( c );
+			queue.add( c );
+		}
+		
+		// top right
+		if(p.hasTop() && p.hasRight() && grid[x+1][y-1]){
+			grid[x+1][y-1] = false;
+			PathNode c = new PathNode(new Point(x+1, y-1), p);
+			p.addChild( c );
+			queue.add( c );
+		}
+		
+		// bottom right
+		if(p.hasRight() && p.hasBottom() && grid[x+1][y+1]){
+			grid[x+1][y+1] = false;
+			PathNode c = new PathNode(new Point(x+1, y+1), p);
 			p.addChild( c );
 			queue.add( c );
 		}
@@ -167,9 +184,11 @@ public class Path
 		g.setColor( Color.RED );
 		g.fillOval( endPoint.x-5, endPoint.y-5, 10, 10 );
 		
-		g.setColor( Color.WHITE );
+		Point last = endPoint;
+		g.setColor(Color.WHITE);
 		for(Point p : shortestPath){
-			g.fillOval( p.x-1, p.y-1, 3, 3 );
+			g.drawLine(last.x, last.y, p.x, p.y);
+			last = p;
 		}
 	}
 }

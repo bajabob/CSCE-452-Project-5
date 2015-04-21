@@ -10,7 +10,7 @@ public class DisplayPanel extends JPanel{
 	/**
 	 * Handles the drawing and coordinate management of the various blocks
 	 */
-	private BlockManager blockManager;
+	private ObstacleManager obstacleManager;
 	
 	/**
 	 * Contains the path information and construction routines
@@ -19,7 +19,7 @@ public class DisplayPanel extends JPanel{
 	
 	public DisplayPanel(){
 		this.setBounds(0, 0, Config.DISPLAY_WIDTH, Config.DISPLAY_HEIGHT);
-		blockManager = new BlockManager();
+		obstacleManager = new ObstacleManager();
 		path = new Path();
 	}
 	
@@ -30,19 +30,22 @@ public class DisplayPanel extends JPanel{
 	 * @param currentToggle String
 	 */
 	public void onMousePressed(int x, int y, String currentToggle){
-		if(currentToggle == ControlPanel.TOGGLE_MOVE_BOXES){
-			blockManager.onMousePressed( x, y );
+		if(currentToggle == ControlPanel.TOGGLE_MOVE_OBSTACLES){
+			obstacleManager.onMousePressed( x, y );
 		}
 		if(currentToggle == ControlPanel.TOGGLE_DROP_START_POINT){
-			if( !blockManager.containsPoint( x, y )){
+			if( !obstacleManager.containsPoint( x, y )){
 				path.setStartPoint( new Point(x, y) );
 			}
 		}
 		if(currentToggle == ControlPanel.TOGGLE_DROP_END_POINT){
-			if( !blockManager.containsPoint( x, y )){
+			if( !obstacleManager.containsPoint( x, y )){
 				path.setEndPoint( new Point(x, y) );
 			}
 		}
+		
+		// clear the path since something has changed
+		path.clear();
 		this.repaint();
 	}
 	
@@ -53,16 +56,16 @@ public class DisplayPanel extends JPanel{
 	 * @param currentToggle String
 	 */
 	public void onMouseDragged(int x, int y, String currentToggle){
-		if(currentToggle == ControlPanel.TOGGLE_MOVE_BOXES){
-			blockManager.onMouseDragged( x, y );
+		if(currentToggle == ControlPanel.TOGGLE_MOVE_OBSTACLES){
+			obstacleManager.onMouseDragged( x, y );
 		}
 		if(currentToggle == ControlPanel.TOGGLE_DROP_START_POINT){
-			if( !blockManager.containsPoint( x, y )){
+			if( !obstacleManager.containsPoint( x, y )){
 				path.setStartPoint( new Point(x, y) );
 			}
 		}
 		if(currentToggle == ControlPanel.TOGGLE_DROP_END_POINT){
-			if( !blockManager.containsPoint( x, y )){
+			if( !obstacleManager.containsPoint( x, y )){
 				path.setEndPoint( new Point(x, y) );
 			}
 		}
@@ -76,19 +79,22 @@ public class DisplayPanel extends JPanel{
 	 * @param currentToggle String
 	 */
 	public void onMouseReleased(int x, int y, String currentToggle){
-		if(currentToggle == ControlPanel.TOGGLE_MOVE_BOXES){
-			blockManager.onMouseReleased( x, y );
+		if(currentToggle == ControlPanel.TOGGLE_MOVE_OBSTACLES){
+			obstacleManager.onMouseReleased( x, y );
 		}
 		this.repaint();
 	}
 	
+	
 	/**
 	 * Simulate the shortest path
 	 */
-	public void onSimulate(){
-		if(path.simulate( blockManager )){
+	public PathResponse onSimulate(){
+		PathResponse p = path.simulate( obstacleManager );
+		if(!p.hasError()){
 			this.repaint();
 		}
+		return p;
 	}
 	
 	/**
@@ -100,7 +106,7 @@ public class DisplayPanel extends JPanel{
 		super.paintComponent( g );
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, Config.DISPLAY_WIDTH, Config.DISPLAY_HEIGHT);
-		blockManager.onDraw( g );
+		obstacleManager.onDraw( g );
 		path.onDraw( g );
 	}
 	
