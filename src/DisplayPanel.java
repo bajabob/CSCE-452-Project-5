@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.swing.JPanel;
 
@@ -16,6 +18,8 @@ public class DisplayPanel extends JPanel{
 	 * Contains the path information and construction routines
 	 */
 	private Path path;
+	
+	private boolean paintWait;
 	
 	public DisplayPanel(){
 		this.setBounds(0, 0, Config.DISPLAY_WIDTH, Config.DISPLAY_HEIGHT);
@@ -89,12 +93,32 @@ public class DisplayPanel extends JPanel{
 	/**
 	 * Simulate the shortest path
 	 */
-	public PathResponse onSimulate(){
-		PathResponse p = path.simulate( obstacleManager );
-		if(!p.hasError()){
-			this.repaint();
-		}
-		return p;
+	public void onSimulate(){
+		Queue<PathNode> queue = new LinkedList<PathNode>();
+		
+		path.simulateInit( obstacleManager, queue );
+		this.repaint();
+		
+		Thread thread = new Thread(){
+			public void run(){
+				int count = 0;
+				while(!queue.isEmpty() && !path.simulateIterate( queue )){
+					if(count < 150){
+						count++;
+						continue;
+					}
+					paintWait = true;
+					while(paintWait){
+						repaint();
+					}
+					count = 0;
+				}
+				path.clearSimulation();
+				repaint();
+			}
+		};
+		
+		thread.start();
 	}
 	
 	/**
@@ -108,6 +132,8 @@ public class DisplayPanel extends JPanel{
 		g.fillRect(0, 0, Config.DISPLAY_WIDTH, Config.DISPLAY_HEIGHT);
 		obstacleManager.onDraw( g );
 		path.onDraw( g );
+		paintWait = false;
+		
 	}
 	
 }

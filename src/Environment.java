@@ -34,12 +34,11 @@ public class Environment extends JPanel implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		controlPanel.onSimulationComplete( displayPanel.onSimulate() );
+		displayPanel.onSimulate();
 	}
 	
 	private class MouseControl extends MouseInputAdapter{
 		public void mousePressed(MouseEvent e) {
-			controlPanel.clearMessage();
 			displayPanel.onMousePressed( e.getX(), e.getY(), controlPanel.getCurrentToggle() );
 	    }
 

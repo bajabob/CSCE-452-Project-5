@@ -8,7 +8,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
@@ -30,10 +29,6 @@ public class ControlPanel extends JPanel implements ActionListener{
 	 */
 	private JRadioButton toggleDropStartPoint, toggleDropEndPoint, toggleMoveObstacles;
 		
-	/**
-	 * Messages to display
-	 */
-	private JLabel message;
 	
 	/**
 	 * Current selected toggle
@@ -64,9 +59,6 @@ public class ControlPanel extends JPanel implements ActionListener{
 		buttonSimulate = new JButton("Simulate");
 		buttonSimulate.setActionCommand(ACTION_SIMULATE);
 		
-		message = new JLabel("");
-		message.setForeground(Color.RED);
-		
 		// add action listeners
 		// toggles callback locally
 		toggleDropStartPoint.addActionListener(this);
@@ -82,28 +74,9 @@ public class ControlPanel extends JPanel implements ActionListener{
 		this.add(toggleDropEndPoint);
 		this.add(toggleMoveObstacles);
 		this.add(buttonSimulate);
-		this.add(message);
 		this.add(Box.createHorizontalGlue());
 	}
 
-	/**
-	 * Called when a simulation is completed
-	 * @param p PathResponse
-	 */
-	public void onSimulationComplete(PathResponse p){
-		if(p.hasError()){
-			message.setText(p.getMessage());
-		}else{
-			message.setText("");
-		}
-	}
-	
-	/**
-	 * Clear the message label
-	 */
-	public void clearMessage(){
-		message.setText("");
-	}
 	
 	/**
 	 * Get the current selected toggle
